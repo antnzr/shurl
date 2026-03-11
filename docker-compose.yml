@@ -1,0 +1,64 @@
+services:
+  shurl_db:
+    image: postgres:18-alpine
+    container_name: shurl_db
+    environment:
+      POSTGRES_DB: 'shurl'
+      POSTGRES_USER: 'shurl'
+      POSTGRES_PASSWORD: 'postgres'
+      PGDATA: '/var/lib/postgresql/data/pgdata'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 35121:5432
+    networks:
+      - shurl_net
+
+  shurl_redis:
+    image: redis:8-alpine
+    container_name: shurl_redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    environment:
+      REDIS_PASSWORD: redis
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "redis"
+    restart: unless-stopped
+    networks:
+      - shurl_net
+
+  shurl_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shurl_app
+    env_file: ./.env
+    environment:
+      - DATABASE_URL=postgres://shurl:postgres@shurl_db:5432/shurl
+    ports:
+      - 3007:3007
+    networks:
+      - shurl_net
+    depends_on:
+      - shurl_db
+      - shurl_redis
+    command:
+      - /bin/sh
+      - -c
+      - |
+        while ! nc -z shurl_db 5432; do
+          sleep 1
+        done
+        npm run db:migrate && npm run start:prod
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  shurl_net:
+    name: shurl_net
