@@ -7,20 +7,20 @@ exports.up = function (knex) {
     BEGIN;
     CREATE TABLE IF NOT EXISTS public.links
     (
-        id              UUID PRIMARY KEY      DEFAULT uuidv7(),
-        slug            VARCHAR(30) NOT NULL,
-        original_url    TEXT         NOT NULL,
-        expired_at      TIMESTAMPTZ,
-        deleted_at      TIMESTAMPTZ,
-        created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-        updated_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+        id           UUID PRIMARY KEY      DEFAULT uuidv7(),
+        code         VARCHAR(10)  NOT NULL,
+        original_url TEXT         NOT NULL,
+        expired_at   TIMESTAMPTZ,
+        deleted_at   TIMESTAMPTZ,
+        created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+        updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
     );
 
-    COMMENT ON COLUMN links.slug IS 'Уникальный slug для ссылки. Должен быть уникальным.';
+    COMMENT ON COLUMN links.code IS 'Уникальный короткий код для ссылки. Должен быть уникальным.';
     COMMENT ON COLUMN links.original_url IS 'Оригинальный URL, на который указывает ссылка.';
     COMMENT ON COLUMN links.expired_at IS 'Время, когда ссылка становится недействительной.';
 
-    CREATE UNIQUE INDEX IF NOT EXISTS links_slug_idx ON public.links (slug);
+    CREATE UNIQUE INDEX links_code_idx ON links(code) WHERE deleted_at IS NULL;
     COMMIT;
   `);
 };

@@ -18,7 +18,7 @@ export const knexProvider: Provider = {
   provide: Repository.DATABASE,
   inject: [ConfigService],
   useFactory: (config: ConfigService) => {
-    const env = config.get('nodeEnv');
+    const env = config.get<string>('nodeEnv')!;
     const dbConf = dbConfig(config.get<string>('database')!);
 
     dbConf.connection = {

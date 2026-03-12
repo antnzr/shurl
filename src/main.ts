@@ -32,7 +32,7 @@ async function bootstrap() {
     }),
   );
 
-/*app.useGlobalFilters(new AppExceptionsFilter());
+  /*app.useGlobalFilters(new AppExceptionsFilter());
   apiDocsSetup(app); */
 
   const config = app.get(ConfigService);

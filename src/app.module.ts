@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { DaoModule } from './dao/dao.module';
-import { LinkModule } from './link/link.module';
-import configuration from './config/configuration';
 import validate from './config/validate';
+import { DaoModule } from './dao/dao.module';
 import logConf from './config/logger.config';
+import { LinkModule } from './link/link.module';
+import { AppController } from './app.controller';
+import configuration from './config/configuration';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CodeGeneratorModule } from './code-generator/code-generator.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import logConf from './config/logger.config';
     LoggerModule.forRootAsync({ inject: [ConfigService], useFactory: logConf }),
     DaoModule,
     LinkModule,
+    CodeGeneratorModule,
   ],
   controllers: [AppController],
 })

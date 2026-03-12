@@ -9,6 +9,7 @@ export enum Environment {
 export enum Service {
   DAO = 'DAO_SERVICE',
   LINK = 'LINK_SERVICE',
+  CODE_GENERATOR = 'CODE_GENERATOR_SERVICE',
 }
 
 export enum Repository {
@@ -25,10 +26,4 @@ export enum Table {
 export const SHURL_TITLE = 'SHURL';
 export const BODY_LIMIT = 10_485_760; // 10MB
 export const API_V1 = '1';
-
-export const HttpMethod = {
-  GET: 'GET',
-  POST: 'POST',
-  PATCH: 'PATCH',
-  DELETE: 'DELETE',
-};
+export const DEFAULT_CODE_LENGTH = 7;

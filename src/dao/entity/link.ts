@@ -1,7 +1,7 @@
 import { BaseEntity } from './base';
 
 export class LinkEntity extends BaseEntity {
-  slug!: string;
+  code!: string;
   original_url!: string;
   expires_at!: Date | string | null;
 }
