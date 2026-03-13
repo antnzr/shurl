@@ -1,17 +1,15 @@
 /// <reference types="jest" />
-import { Test, TestingModule } from '@nestjs/testing';
-import { CodeGeneratorService } from './code-generator.service';
+import { Service } from '../constants';
+import { TestingModule } from '@nestjs/testing';
 import { ICodeGeneratorService } from './interfaces';
+import { APP_TestingModule } from '../../test/test.module';
 
 describe('ICodeGeneratorService', () => {
   let service: ICodeGeneratorService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [CodeGeneratorService],
-    }).compile();
-
-    service = module.get<CodeGeneratorService>(CodeGeneratorService);
+    const module: TestingModule = await APP_TestingModule();
+    service = module.get<ICodeGeneratorService>(Service.CODE_GENERATOR);
   });
 
   describe('generateCode', () => {

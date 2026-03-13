@@ -10,7 +10,7 @@ exports.up = function (knex) {
         id           UUID PRIMARY KEY      DEFAULT uuidv7(),
         code         VARCHAR(10)  NOT NULL,
         original_url TEXT         NOT NULL,
-        expired_at   TIMESTAMPTZ,
+        expires_at   TIMESTAMPTZ,
         deleted_at   TIMESTAMPTZ,
         created_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
         updated_at   TIMESTAMPTZ  NOT NULL DEFAULT NOW()
@@ -18,7 +18,7 @@ exports.up = function (knex) {
 
     COMMENT ON COLUMN links.code IS 'Уникальный короткий код для ссылки. Должен быть уникальным.';
     COMMENT ON COLUMN links.original_url IS 'Оригинальный URL, на который указывает ссылка.';
-    COMMENT ON COLUMN links.expired_at IS 'Время, когда ссылка становится недействительной.';
+    COMMENT ON COLUMN links.expires_at IS 'Время, когда ссылка становится недействительной.';
 
     CREATE UNIQUE INDEX links_code_idx ON links(code) WHERE deleted_at IS NULL;
     COMMIT;

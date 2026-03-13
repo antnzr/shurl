@@ -1,18 +1,41 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { LinkService } from './link.service';
+import { Knex } from 'knex';
+import { Service } from '../constants';
+import { faker } from '@faker-js/faker';
+import { ILinkService } from './interfaces';
+import { TestInfra } from '../../test/infra';
+import { TestingModule } from '@nestjs/testing';
+import { APP_TestingModule } from '../../test/test.module';
 
-describe('LinkService', () => {
-  let service: LinkService;
+describe('ILinkService', () => {
+  let service: ILinkService;
+  let db: Knex;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [LinkService],
-    }).compile();
+  const infra = TestInfra.getInstance();
 
-    service = module.get<LinkService>(LinkService);
+  beforeAll(async () => {
+    await infra.up();
+    const { knex } = await infra.makeInfraServices();
+    db = knex;
+
+    const module: TestingModule = await APP_TestingModule({ knex });
+    service = module.get<ILinkService>(Service.LINK);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  afterAll(async () => {
+    await db?.destroy();
+  });
+
+  describe('create', () => {
+    it('should create', async () => {
+      const url = faker.internet.url();
+      const result = await service.create({ url });
+
+      expect(result.id).toBeDefined();
+      expect(result.code).toBeDefined();
+      expect(result.originalUrl).toBe(url);
+      expect(result.expiresAt).toBeNull();
+      expect(result.createdAt).toBeDefined();
+      expect(result.updatedAt).toBeDefined();
+    });
   });
 });
