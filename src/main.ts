@@ -1,13 +1,14 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { Logger } from 'nestjs-pino';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { ConfigService } from '@nestjs/config';
-import { RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger } from 'nestjs-pino';
+import { AppModule } from './app.module';
 import { BODY_LIMIT } from './constants';
+import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+import apiDocsSetup from './config/swagger.config';
+import { RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -32,8 +33,8 @@ async function bootstrap() {
     }),
   );
 
-  /*app.useGlobalFilters(new AppExceptionsFilter());
-  apiDocsSetup(app); */
+  apiDocsSetup(app);
+  /*app.useGlobalFilters(new AppExceptionsFilter());*/
 
   const config = app.get(ConfigService);
   const port = config.get<number>('appPort')!;
