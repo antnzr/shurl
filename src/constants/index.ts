@@ -17,7 +17,14 @@ export enum Repository {
   LINKS = 'LINKS_REPOSITORY',
 }
 
-export const ErrCode = {};
+export enum ErrorCode {
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  LINK_NOT_FOUND = 'LINK_NOT_FOUND',
+  LINK_EXPIRED = 'LINK_EXPIRED',
+  SHORT_CODE_COLLISION = 'SHORT_CODE_COLLISION',
+  THROTTLED = 'THROTTLED',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+}
 
 export enum Table {
   LINKS = 'links',

@@ -5,9 +5,15 @@ import {
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { BODY_LIMIT } from './constants';
+import {
+  ValidationError,
+  flattenValidationErrors,
+} from './common/errors/validation.error';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import apiDocsSetup from './config/swagger.config';
+import { AppExceptionFilter } from './filter/app.exception-filter';
+import { ValidationError as ClassValidatorError } from 'class-validator';
 import { RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
@@ -29,12 +35,17 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      stopAtFirstError: false,
       transformOptions: { enableImplicitConversion: true },
+      exceptionFactory: (errors: ClassValidatorError[]): ValidationError => {
+        const fields = flattenValidationErrors(errors);
+        return new ValidationError(fields);
+      },
     }),
   );
 
   apiDocsSetup(app);
-  /*app.useGlobalFilters(new AppExceptionsFilter());*/
+  app.useGlobalFilters(new AppExceptionFilter());
 
   const config = app.get(ConfigService);
   const port = config.get<number>('appPort')!;
