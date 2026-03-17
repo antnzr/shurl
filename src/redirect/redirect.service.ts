@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { type IDAO } from '../dao/interfaces';
 import { InjectDAO } from '../utils/injecters';
 import { IRedirectService } from './interfaces';
-import { LinkExpiredError, LinkNotFoundError } from './errors';
+import { LinkExpiredError, LinkNotFoundError } from '../link/errors';
 
 @Injectable()
 export class RedirectService implements IRedirectService {

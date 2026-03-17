@@ -6,7 +6,7 @@ import { TestingModule } from '@nestjs/testing';
 import { IRedirectService } from './interfaces';
 import { ILinkService } from '../link/interfaces';
 import { APP_TestingModule } from '../../test/test.module';
-import { LinkExpiredError, LinkNotFoundError } from './errors';
+import { LinkExpiredError, LinkNotFoundError } from '../link/errors';
 
 describe('IRedirectService', () => {
   let service: IRedirectService;

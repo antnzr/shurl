@@ -8,6 +8,7 @@ import { API_V1 } from '../constants';
 import type { ILinkService } from './interfaces';
 import { InjectLinkService } from '../utils/injecters';
 import { CreateLinkRequest, LinkResponse } from './dto';
+import { ApiInternalError, ApiLinkCollision } from '../decorators/api-error';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 @ApiTags('Link')
@@ -20,6 +21,8 @@ export class LinkController {
 
   @ApiOperation({ description: 'Create a new short link.' })
   @ApiBody({ type: CreateLinkRequest })
+  @ApiLinkCollision()
+  @ApiInternalError()
   @ApiCreatedResponse({ type: LinkResponse })
   @Post()
   @HttpCode(HttpStatus.CREATED)

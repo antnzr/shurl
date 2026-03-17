@@ -10,6 +10,10 @@ export function ApiError(status: number, description: string) {
 
 export const ApiValidationError = () => ApiError(400, 'Validation error');
 
+export const ApiInternalError = () => ApiError(500, 'Internal server error');
+
 export const ApiLinkNotFound = () => ApiError(404, 'Link not found');
 
 export const ApiLinkExpired = () => ApiError(410, 'Link expired');
+
+export const ApiLinkCollision = () => ApiError(409, 'Link code collision');

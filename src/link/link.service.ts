@@ -1,8 +1,10 @@
 import { mapTo } from '../utils/map-to';
-import { Injectable } from '@nestjs/common';
 import { ILinkService } from './interfaces';
 import type { IDAO } from '../dao/interfaces';
+import { LinkCollisionError } from './errors';
 import { CreateLinkRequest, LinkResponse } from './dto';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { AppHttpException } from '../common/errors/app.exception-error';
 import type { ICodeGeneratorService } from '../code-generator/interfaces';
 import { InjectCodeGeneratorService, InjectDAO } from '../utils/injecters';
 
@@ -34,10 +36,13 @@ export class LinkService implements ILinkService {
           continue; // collision → retry
         }
 
-        throw err;
+        throw new LinkCollisionError(url);
       }
     }
 
-    throw new Error('Failed to generate a unique code after 5 attempts');
+    throw new AppHttpException(HttpStatus.INTERNAL_SERVER_ERROR, {
+      message:
+        'Failed to create link after multiple attempts due to code collisions',
+    });
   }
 }

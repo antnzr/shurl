@@ -6,8 +6,8 @@ export class LinkNotFoundError extends BaseError {
   static status = HttpStatus.NOT_FOUND;
   static errorCode = ErrorCode.LINK_NOT_FOUND;
 
-  constructor(shortCode: string) {
-    super('Link not found', { details: { shortCode } });
+  constructor(code: string) {
+    super('Link not found', { details: { code } });
   }
 }
 
@@ -15,7 +15,16 @@ export class LinkExpiredError extends BaseError {
   static status = HttpStatus.GONE;
   static errorCode = ErrorCode.LINK_EXPIRED;
 
-  constructor(shortCode: string, expiresAt: Date | string) {
-    super('Link expired', { details: { shortCode, expiresAt } });
+  constructor(code: string, expiresAt: Date | string) {
+    super('Link expired', { details: { code, expiresAt } });
+  }
+}
+
+export class LinkCollisionError extends BaseError {
+  static status = HttpStatus.CONFLICT;
+  static errorCode = ErrorCode.LINK_COLLISION;
+
+  constructor(url: string) {
+    super('Link code collision', { details: { url } });
   }
 }
