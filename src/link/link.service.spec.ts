@@ -1,8 +1,8 @@
 import { Knex } from 'knex';
-import { Service } from '../constants';
 import { faker } from '@faker-js/faker';
 import { ILinkService } from './interfaces';
 import { TestInfra } from '../../test/infra';
+import { Service, Table } from '../constants';
 import { TestingModule } from '@nestjs/testing';
 import { APP_TestingModule } from '../../test/test.module';
 
@@ -23,6 +23,10 @@ describe('ILinkService', () => {
 
   afterAll(async () => {
     await db?.destroy();
+  });
+
+  afterEach(async () => {
+    await db(Table.LINKS).del();
   });
 
   describe('create', () => {

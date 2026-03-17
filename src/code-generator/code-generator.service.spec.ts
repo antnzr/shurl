@@ -7,7 +7,7 @@ import { APP_TestingModule } from '../../test/test.module';
 describe('ICodeGeneratorService', () => {
   let service: ICodeGeneratorService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await APP_TestingModule();
     service = module.get<ICodeGeneratorService>(Service.CODE_GENERATOR);
   });

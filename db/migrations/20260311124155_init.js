@@ -20,7 +20,11 @@ exports.up = function (knex) {
     COMMENT ON COLUMN links.original_url IS 'Оригинальный URL, на который указывает ссылка.';
     COMMENT ON COLUMN links.expires_at IS 'Время, когда ссылка становится недействительной.';
 
-    CREATE UNIQUE INDEX links_code_idx ON links(code) WHERE deleted_at IS NULL;
+    -- covering index, lookup без чтения таблицы
+    CREATE UNIQUE INDEX links_code_idx
+      ON links(code)
+      INCLUDE (original_url, expires_at)
+      WHERE deleted_at IS NULL;
     COMMIT;
   `);
 };

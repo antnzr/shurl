@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { LinkEntity } from './entity';
-import { CreateLinkDto } from './dto';
+import { CreateLinkDto, LinkResolveDto } from './dto';
 
 export interface IDAO {
   db: Knex;
@@ -9,4 +9,6 @@ export interface IDAO {
 
 export interface ILinkRepository {
   create(dto: CreateLinkDto): Promise<LinkEntity>;
+  findByCode(code: string): Promise<LinkEntity | null>;
+  findPartialLinkByCode(code: string): Promise<LinkResolveDto | null>;
 }

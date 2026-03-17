@@ -1,16 +1,22 @@
-import { Provider } from '@nestjs/common';
-import { linkProvider } from '../src/link/link.module';
-import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
-import { Test, TestingModule } from '@nestjs/testing';
 import { Knex } from 'knex';
-import { ConfigModule } from '@nestjs/config';
-import configuration from '../src/config/configuration';
-import validate from '../src/config/validate';
-import { daoProviders } from '../src/dao/dao.module';
+import { Provider } from '@nestjs/common';
 import { Repository } from '../src/constants';
+import validate from '../src/config/validate';
+import { ConfigModule } from '@nestjs/config';
+import { daoProviders } from '../src/dao/dao.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { linkProvider } from '../src/link/link.module';
+import configuration from '../src/config/configuration';
+import { redirectProvider } from '../src/redirect/redirect.module';
+import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
 
 function appProviders(): Provider[] {
-  return [...daoProviders, linkProvider, codeGeneratorProvider];
+  return [
+    ...daoProviders,
+    linkProvider,
+    redirectProvider,
+    codeGeneratorProvider,
+  ];
 }
 
 /**

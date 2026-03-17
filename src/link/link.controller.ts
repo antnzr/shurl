@@ -10,7 +10,7 @@ import { InjectLinkService } from '../utils/injecters';
 import { CreateLinkRequest, LinkResponse } from './dto';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
-@ApiTags('links')
+@ApiTags('Link')
 @Controller({ path: 'links', version: API_V1 })
 export class LinkController {
   constructor(

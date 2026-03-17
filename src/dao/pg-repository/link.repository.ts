@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
 import { LinkEntity } from '../entity';
-import { CreateLinkDto } from '../dto';
 import { Table } from '../../constants';
 import { ILinkRepository } from '../interfaces';
 import { InjectDB } from '../../utils/injecters';
+import { CreateLinkDto, LinkResolveDto } from '../dto';
 
 export class LinkRepository implements ILinkRepository {
   constructor(
@@ -12,17 +12,31 @@ export class LinkRepository implements ILinkRepository {
   ) {}
 
   async create(dto: CreateLinkDto): Promise<LinkEntity> {
+    const { code, originalUrl, expiresAt } = dto;
     const [result] = await this.db<LinkEntity>(Table.LINKS)
-      .insert(this._mapToLink(dto))
+      .insert({
+        code,
+        original_url: originalUrl,
+        expires_at: expiresAt ? new Date(expiresAt) : null,
+      })
       .returning('*');
     return result;
   }
 
-  private _mapToLink(dto: CreateLinkDto): Partial<LinkEntity> {
-    return {
-      code: dto.code,
-      original_url: dto.originalUrl,
-      expires_at: dto.expiresAt ? new Date(dto.expiresAt) : null,
-    };
+  async findByCode(code: string): Promise<LinkEntity | null> {
+    const result = await this.db<LinkEntity>(Table.LINKS)
+      .where({ code, deleted_at: null })
+      .first();
+    return result || null;
+  }
+
+  async findPartialLinkByCode(
+    code: string,
+  ): Promise<LinkResolveDto | null> {
+    const result = await this.db<LinkEntity>(Table.LINKS)
+      .where({ code, deleted_at: null })
+      .select('original_url', 'expires_at')
+      .first();
+    return result || null;
   }
 }

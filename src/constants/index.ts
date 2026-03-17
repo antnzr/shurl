@@ -9,6 +9,7 @@ export enum Environment {
 export enum Service {
   DAO = 'DAO_SERVICE',
   LINK = 'LINK_SERVICE',
+  REDIRECT = 'REDIRECT_SERVICE',
   CODE_GENERATOR = 'CODE_GENERATOR_SERVICE',
 }
 
