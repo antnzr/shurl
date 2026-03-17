@@ -30,9 +30,7 @@ export class LinkRepository implements ILinkRepository {
     return result || null;
   }
 
-  async findPartialLinkByCode(
-    code: string,
-  ): Promise<LinkResolveDto | null> {
+  async findPartialLinkByCode(code: string): Promise<LinkResolveDto | null> {
     const result = await this.db<LinkEntity>(Table.LINKS)
       .where({ code, deleted_at: null })
       .select('original_url', 'expires_at')

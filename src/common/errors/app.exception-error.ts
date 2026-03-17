@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { ErrorCode } from '../../constants';
+import { ErrorCode } from './error.code';
 import { HttpException } from '@nestjs/common';
 
 export interface ErrorOptions {

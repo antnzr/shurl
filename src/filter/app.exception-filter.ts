@@ -5,8 +5,8 @@ import {
   ArgumentsHost,
   ExceptionFilter,
 } from '@nestjs/common';
-import { ErrorCode } from '../constants';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { ErrorCode } from '../common/errors/error.code';
 import { BaseError } from '../common/errors/app.exception-error';
 
 @Catch()

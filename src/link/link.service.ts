@@ -4,11 +4,19 @@ import type { IDAO } from '../dao/interfaces';
 import { LinkCollisionError } from './errors';
 import { CreateLinkRequest, LinkResponse } from './dto';
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { PGErrorCode } from '../common/errors/error.code';
 import { AppHttpException } from '../common/errors/app.exception-error';
 import type { ICodeGeneratorService } from '../code-generator/interfaces';
 import { InjectCodeGeneratorService, InjectDAO } from '../utils/injecters';
 
 const CREATE_ATTEMPTS = 5;
+
+function isPgUniqueViolationError(err: unknown): err is { code: PGErrorCode } {
+  if (typeof err !== 'object' || err === null) return false;
+
+  const maybeCode = (err as { code: unknown }).code;
+  return Object.values(PGErrorCode).includes(maybeCode as PGErrorCode);
+}
 
 @Injectable()
 export class LinkService implements ILinkService {
@@ -31,8 +39,11 @@ export class LinkService implements ILinkService {
         });
 
         return mapTo(LinkResponse, entity);
-      } catch (err) {
-        if (err?.['code'] === '23505') {
+      } catch (err: unknown) {
+        if (
+          isPgUniqueViolationError(err) &&
+          err.code === PGErrorCode.UNIQUE_VIOLATION
+        ) {
           continue; // collision → retry
         }
 

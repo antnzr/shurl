@@ -1,5 +1,5 @@
+import { ErrorCode } from './error.code';
 import { HttpStatus } from '@nestjs/common';
-import { ErrorCode } from '../../constants';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ErrorResponse {

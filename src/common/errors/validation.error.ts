@@ -1,5 +1,5 @@
+import { ErrorCode } from './error.code';
 import { HttpStatus } from '@nestjs/common';
-import { ErrorCode } from '../../constants';
 import { BaseError } from './app.exception-error';
 import { ValidationError as _ValidationError } from 'class-validator';
 

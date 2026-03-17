@@ -18,14 +18,6 @@ export enum Repository {
   LINKS = 'LINKS_REPOSITORY',
 }
 
-export enum ErrorCode {
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
-  LINK_NOT_FOUND = 'LINK_NOT_FOUND',
-  LINK_EXPIRED = 'LINK_EXPIRED',
-  LINK_COLLISION = 'LINK_COLLISION',
-  VALIDATION_ERROR = 'VALIDATION_ERROR',
-}
-
 export enum Table {
   LINKS = 'links',
 }

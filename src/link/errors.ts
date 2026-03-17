@@ -1,5 +1,5 @@
-import { ErrorCode } from '../constants';
 import { HttpStatus } from '@nestjs/common';
+import { ErrorCode } from '../common/errors/error.code';
 import { BaseError } from '../common/errors/app.exception-error';
 
 export class LinkNotFoundError extends BaseError {

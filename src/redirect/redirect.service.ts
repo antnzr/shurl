@@ -22,6 +22,6 @@ export class RedirectService implements IRedirectService {
       throw new LinkExpiredError(code, link.expires_at);
     }
 
-    return link.original_url!;
+    return link.original_url;
   }
 }

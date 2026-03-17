@@ -56,4 +56,8 @@ async function bootstrap() {
 
   await app.listen(port, addr, () => log.log(`Listening on [${addr}:${port}]`));
 }
-bootstrap();
+
+bootstrap().catch((err: unknown) => {
+  console.error(err);
+  process.exit(1);
+});

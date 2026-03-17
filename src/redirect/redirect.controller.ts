@@ -1,9 +1,14 @@
+import {
+  ApiTags,
+  ApiParam,
+  ApiOperation,
+  ApiFoundResponse,
+} from '@nestjs/swagger';
 import type { FastifyReply } from 'fastify';
 import { type IRedirectService } from './interfaces';
 import { InjectRedirectService } from '../utils/injecters';
 import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ApiLinkExpired, ApiLinkNotFound } from '../decorators/api-error';
-import { ApiFoundResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Redirect')
 @Controller()
