@@ -18,18 +18,18 @@ export const knexProvider: Provider = {
   provide: Repository.DATABASE,
   inject: [ConfigService],
   useFactory: (config: ConfigService) => {
-    const env = config.get<string>('nodeEnv')!;
+    const env = config.get<Environment>('nodeEnv')!;
     const dbConf = dbConfig(config.get<string>('database')!);
 
     dbConf.connection = {
-      ...dbConf.connection,
+      ...(dbConf.connection as Record<string, unknown>),
       ...(env !== Environment.Dev && {
         ssl: { rejectUnauthorized: false },
       }),
     };
     const db = knex(dbConf);
 
-    db.on('query-error', (error, query) => {
+    db.on('query-error', (error: unknown, query: unknown) => {
       log.error({ tag: 'db', query, error });
     });
 
@@ -64,7 +64,7 @@ export class DaoModule implements OnApplicationShutdown {
     const connection = this.moduleRef.get<Knex>(Repository.DATABASE);
     try {
       if (connection) await connection.destroy();
-    } catch (err) {
+    } catch (err: unknown) {
       this.log.error({ tag: this.onApplicationShutdown.name, err });
     }
   }

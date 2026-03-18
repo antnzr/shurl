@@ -1,6 +1,7 @@
 import { IsUrl } from 'class-validator';
+import { getField } from '../../utils/get-field';
 import { Expose, Transform } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateLinkRequest {
   @ApiProperty({ example: 'https://example.com' })
@@ -19,26 +20,26 @@ export class LinkResponse {
 
   @ApiProperty({ example: 'https://example.com' })
   @Expose()
-  @Transform(({ obj }) => obj.originalUrl || obj.original_url)
+  @Transform(({ obj }) => getField<string>(obj, 'originalUrl', 'original_url'))
   originalUrl!: string;
 
   @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
   @Expose()
-  @Transform(({ obj }) => obj.createdAt || obj.created_at)
+  @Transform(({ obj }) => getField<string>(obj, 'createdAt', 'created_at'))
   createdAt!: Date | string;
 
   @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
   @Expose()
-  @Transform(({ obj }) => obj.updatedAt || obj.updated_at)
+  @Transform(({ obj }) => getField<string>(obj, 'updatedAt', 'updated_at'))
   updatedAt!: Date | string;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
+  @ApiPropertyOptional({ example: '2023-01-01T00:00:00.000Z' })
   @Expose()
-  @Transform(({ obj }) => obj.deletedAt || obj.deleted_at)
+  @Transform(({ obj }) => getField<string>(obj, 'deletedAt', 'deleted_at'))
   deletedAt?: Date | null;
 
-  @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
+  @ApiPropertyOptional({ example: '2023-01-01T00:00:00.000Z' })
   @Expose()
-  @Transform(({ obj }) => obj.expiresAt || obj.expires_at)
+  @Transform(({ obj }) => getField<string>(obj, 'expiresAt', 'expires_at'))
   expiresAt?: Date | string | null;
 }

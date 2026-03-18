@@ -1,4 +1,6 @@
-export default function (connectionString: string) {
+import { Knex } from 'knex';
+
+export default function (connectionString: string): Knex.Config {
   return {
     client: 'pg',
     dialect: 'postgres',
