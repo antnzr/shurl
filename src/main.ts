@@ -1,3 +1,4 @@
+import './config/telemetry';
 import {
   FastifyAdapter,
   NestFastifyApplication,
