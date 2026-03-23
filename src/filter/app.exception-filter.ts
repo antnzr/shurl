@@ -5,8 +5,9 @@ import {
   ArgumentsHost,
   ExceptionFilter,
 } from '@nestjs/common';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { ErrorCode } from '../common/errors/error.code';
+import { trace, SpanStatusCode } from '@opentelemetry/api';
 import { BaseError } from '../common/errors/app.exception-error';
 
 @Catch()
@@ -18,6 +19,8 @@ export class AppExceptionFilter implements ExceptionFilter {
 
     const req = ctx.getRequest<FastifyRequest>();
     const res = ctx.getResponse<FastifyReply>();
+
+    const span = trace.getActiveSpan();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let errorCode = ErrorCode.INTERNAL_ERROR;
@@ -33,24 +36,46 @@ export class AppExceptionFilter implements ExceptionFilter {
       message = exception.message;
       details = exception.details;
       errorId = exception.errorId;
-
-      this.logger.error({
-        message,
-        details,
-        errorId,
-        errorCode,
-        path: req.url,
-        requestId: req.id,
-        stack: exception.stack,
-      });
-    } else {
-      this.logger.error({
-        path: req.url,
-        error: exception,
-        requestId: req.id,
-        message: 'Unhandled exception',
-      });
     }
+
+    const err =
+      exception instanceof Error
+        ? {
+            name: exception.name,
+            message: exception.message,
+            stack: exception.stack,
+          }
+        : {
+            name: 'UnknownError',
+            message: String(exception),
+          };
+
+    if (span) {
+      span.recordException(err);
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message,
+      });
+
+      span.setAttributes({
+        'app.error_code': errorCode,
+        'http.status_code': status,
+      });
+
+      if (errorId) {
+        span.setAttribute('app.error_id', errorId);
+      }
+    }
+
+    this.logger.error({
+      err,
+      errorCode,
+      errorId,
+      details,
+      path: req.url,
+      requestId: req.id,
+      statusCode: status,
+    });
 
     res.status(status).send({
       message,

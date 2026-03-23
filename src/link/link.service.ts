@@ -1,22 +1,22 @@
+import {
+  InjectDAO,
+  InjectCodeGeneratorService,
+  InjectObservabilityService,
+} from '../utils/injecters';
 import { mapTo } from '../utils/map-to';
 import { ILinkService } from './interfaces';
+import { meter } from '../observability/dto';
 import type { IDAO } from '../dao/interfaces';
-import { LinkCollisionError } from './errors';
-import { CreateLinkRequest, LinkResponse } from './dto';
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { CreateLinkRequest, LinkResponse } from './dto';
 import { PGErrorCode } from '../common/errors/error.code';
+import { isPgUniqueViolationError } from '../common/errors/pg.error';
 import { AppHttpException } from '../common/errors/app.exception-error';
+import { type IObservabilityService } from '../observability/interfaces';
 import type { ICodeGeneratorService } from '../code-generator/interfaces';
-import { InjectCodeGeneratorService, InjectDAO } from '../utils/injecters';
 
 const CREATE_ATTEMPTS = 5;
-
-function isPgUniqueViolationError(err: unknown): err is { code: PGErrorCode } {
-  if (typeof err !== 'object' || err === null) return false;
-
-  const maybeCode = (err as { code: unknown }).code;
-  return Object.values(PGErrorCode).includes(maybeCode as PGErrorCode);
-}
+const LINK_CREATE = 'link.create';
 
 @Injectable()
 export class LinkService implements ILinkService {
@@ -25,31 +25,41 @@ export class LinkService implements ILinkService {
     private readonly dao: IDAO,
     @InjectCodeGeneratorService()
     private readonly codeGeneratorService: ICodeGeneratorService,
+    @InjectObservabilityService()
+    private readonly obs: IObservabilityService,
   ) {}
 
   async create(dto: CreateLinkRequest): Promise<LinkResponse> {
+    const start = this.obs.start(LINK_CREATE);
+
     const { url } = dto;
 
     for (let i = 0; i < CREATE_ATTEMPTS; i++) {
       try {
         const code = this.codeGeneratorService.generateCode();
+
         const entity = await this.dao.links.create({
           code,
           originalUrl: url,
         });
 
+        this.obs.success(LINK_CREATE, start);
         return mapTo(LinkResponse, entity);
       } catch (err: unknown) {
         if (
           isPgUniqueViolationError(err) &&
           err.code === PGErrorCode.UNIQUE_VIOLATION
         ) {
-          continue; // collision → retry
+          this.obs.retry(LINK_CREATE);
+          continue;
         }
 
-        throw new LinkCollisionError(url);
+        this.obs.error(LINK_CREATE);
+        throw err; // 👈 important fix
       }
     }
+
+    this.obs.error(LINK_CREATE);
 
     throw new AppHttpException(HttpStatus.INTERNAL_SERVER_ERROR, {
       message:

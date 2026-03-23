@@ -8,3 +8,5 @@ export const InjectRedirectService = (): ParameterDecorator =>
   Inject(Service.REDIRECT);
 export const InjectCodeGeneratorService = (): ParameterDecorator =>
   Inject(Service.CODE_GENERATOR);
+export const InjectObservabilityService = (): ParameterDecorator =>
+  Inject(Service.OBSERVABILITY);

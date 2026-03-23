@@ -64,6 +64,7 @@ services:
     ports:
       - "4317:4317" # gRPC
       - "4318:4318" # HTTP
+      - "8889:8889"
     networks:
       - shurl_net
     depends_on:
@@ -90,6 +91,16 @@ services:
     depends_on:
       - tempo
       - otel_collector
+
+  prometheus:
+    image: prom/prometheus:v3.10.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - shurl_net
 
 volumes:
   postgres-data:

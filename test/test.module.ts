@@ -9,12 +9,14 @@ import { linkProvider } from '../src/link/link.module';
 import configuration from '../src/config/configuration';
 import { redirectProvider } from '../src/redirect/redirect.module';
 import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
+import { observabilityProvider } from '../src/observability/observability.module';
 
 function appProviders(): Provider[] {
   return [
     ...daoProviders,
     linkProvider,
     redirectProvider,
+    observabilityProvider,
     codeGeneratorProvider,
   ];
 }

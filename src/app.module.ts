@@ -9,6 +9,7 @@ import configuration from './config/configuration';
 import { RedirectModule } from './redirect/redirect.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CodeGeneratorModule } from './code-generator/code-generator.module';
+import { ObservabilityModule } from './observability/observability.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CodeGeneratorModule } from './code-generator/code-generator.module';
     LinkModule,
     RedirectModule,
     CodeGeneratorModule,
+    ObservabilityModule,
   ],
   controllers: [AppController],
 })
