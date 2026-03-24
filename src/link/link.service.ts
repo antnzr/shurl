@@ -5,10 +5,10 @@ import {
 } from '../utils/injecters';
 import { mapTo } from '../utils/map-to';
 import { ILinkService } from './interfaces';
-import { meter } from '../observability/dto';
 import type { IDAO } from '../dao/interfaces';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateLinkRequest, LinkResponse } from './dto';
+import { OperationErrorType } from '../observability/dto';
 import { PGErrorCode } from '../common/errors/error.code';
 import { isPgUniqueViolationError } from '../common/errors/pg.error';
 import { AppHttpException } from '../common/errors/app.exception-error';
@@ -50,17 +50,16 @@ export class LinkService implements ILinkService {
           isPgUniqueViolationError(err) &&
           err.code === PGErrorCode.UNIQUE_VIOLATION
         ) {
-          this.obs.retry(LINK_CREATE);
+          this.obs.retry(LINK_CREATE, i + 1);
           continue;
         }
 
-        this.obs.error(LINK_CREATE);
+        this.obs.error(LINK_CREATE, OperationErrorType.BUSINESS);
         throw err; // 👈 important fix
       }
     }
 
-    this.obs.error(LINK_CREATE);
-
+    this.obs.error(LINK_CREATE, OperationErrorType.SYSTEM);
     throw new AppHttpException(HttpStatus.INTERNAL_SERVER_ERROR, {
       message:
         'Failed to create link after multiple attempts due to code collisions',

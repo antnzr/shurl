@@ -1,7 +1,12 @@
+import {
+  OperationName,
+  metricsRegistry,
+  OperationStatus,
+  OperationErrorType,
+} from './dto';
 import { Injectable } from '@nestjs/common';
 import { IObservabilityService } from './interfaces';
 import { SpanStatusCode, trace } from '@opentelemetry/api';
-import { metricsRegistry, OperationName, OperationStatus } from './dto';
 
 @Injectable()
 export class ObservabilityService implements IObservabilityService {
@@ -37,17 +42,21 @@ export class ObservabilityService implements IObservabilityService {
     }
   }
 
-  error(operation: OperationName): void {
+  error(operation: OperationName, type: OperationErrorType): void {
     const span = trace.getActiveSpan();
 
     metricsRegistry.operationCounter.add(1, {
       operation,
+      error_type: type,
       status: OperationStatus.ERROR,
     });
 
     if (span) {
       span.setStatus({ code: SpanStatusCode.ERROR });
-      span.setAttribute('app.error', true);
+      span.setAttributes({
+        'app.error': true,
+        'app.error_type': type,
+      });
     }
   }
 

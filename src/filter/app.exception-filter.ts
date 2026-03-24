@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { ErrorCode } from '../common/errors/error.code';
+import { OperationErrorType } from '../observability/dto';
 import { trace, SpanStatusCode } from '@opentelemetry/api';
 import { BaseError } from '../common/errors/app.exception-error';
 
@@ -62,6 +63,13 @@ export class AppExceptionFilter implements ExceptionFilter {
         'http.status_code': status,
       });
 
+      span.setAttribute(
+        'app.error_type',
+        exception instanceof BaseError
+          ? OperationErrorType.BUSINESS
+          : OperationErrorType.SYSTEM,
+      );
+
       if (errorId) {
         span.setAttribute('app.error_id', errorId);
       }
@@ -69,9 +77,9 @@ export class AppExceptionFilter implements ExceptionFilter {
 
     this.logger.error({
       err,
-      errorCode,
       errorId,
       details,
+      errorCode,
       path: req.url,
       requestId: req.id,
       statusCode: status,

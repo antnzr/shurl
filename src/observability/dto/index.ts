@@ -23,3 +23,8 @@ export enum OperationStatus {
   RETRY = 'retry',
   TOTAL = 'total',
 }
+
+export enum OperationErrorType {
+  SYSTEM = 'system',
+  BUSINESS = 'business',
+}
