@@ -1,0 +1,57 @@
+groups:
+  - name: url-shortener-alerts
+    rules:
+      # 🚨 1. System errors (critical)
+      - alert: SystemErrorsDetected
+        expr: rate(app_operation_total{status="error", error_type="system"}[1m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'System errors detected'
+          description: 'System-level errors are occurring in the application'
+
+      # ⚠️ 2. High error rate (>5%)
+      - alert: HighErrorRate
+        expr: |
+          rate(app_operation_total{status="error"}[1m])
+          /
+          rate(app_operation_total{status="total"}[1m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High error rate'
+          description: 'More than 5% of requests are failing'
+
+      # 🐢 3. High latency (p95 > 200ms)
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            rate(app_operation_duration_ms_bucket[5m])
+          ) > 200
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High latency (p95)'
+          description: '95th percentile latency is above 200ms'
+
+      # 🔁 4. Too many retries (collision issue)
+      - alert: HighRetryRate
+        expr: rate(app_operation_total{status="retry"}[1m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High retry rate'
+          description: 'Too many retries detected (possible code collision issue)'
+      # Test alert
+      # - alert: TestAlert
+      #   expr: vector(1)
+      #   for: 10s
+      #   labels:
+      #     severity: critical
+      #   annotations:
+      #     summary: "Test alert"
