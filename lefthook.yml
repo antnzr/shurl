@@ -1,0 +1,44 @@
+pre-commit:
+  commands:
+    lint:
+      glob: '*.{ts,js}'
+      run: pnpm eslint --fix {staged_files}
+      stage_fixed: true
+
+    format:
+      glob: '*.{ts,js,json,md,yml,yaml}'
+      run: pnpm prettier --write {staged_files}
+      stage_fixed: true
+
+    secrets:
+      run: |
+        blocked=$(git diff --cached --name-only | grep -E '^\.env$|\.env\.(local|production)$')
+        if [ -n "$blocked" ]; then
+          echo "❌ Real environment files cannot be committed:"
+          echo "$blocked"
+          exit 1
+        fi
+
+    large-files:
+      run: |
+        files=$(git diff --cached --name-only)
+        for file in $files; do
+          if [ -f "$file" ]; then
+            size=$(wc -c <"$file")
+            if [ "$size" -gt 5242880 ]; then
+              echo "❌ File $file is larger than 5MB"
+              exit 1
+            fi
+          fi
+        done
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm commitlint --edit {1}
+
+pre-push:
+  commands:
+    typecheck:
+      glob: '*.{ts,tsx}'
+      run: pnpm typecheck
