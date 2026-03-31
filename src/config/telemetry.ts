@@ -33,4 +33,13 @@ const sdk = new NodeSDK({
 
 sdk.start();
 
-process.on('SIGTERM', async () => await sdk.shutdown());
+async function shutdown(): Promise<void> {
+  try {
+    await sdk.shutdown();
+  } catch (err: unknown) {
+    console.error('Telemetry shutdown error', err);
+  }
+}
+
+process.on('SIGTERM', () => void shutdown());
+process.on('SIGINT', () => void shutdown());
