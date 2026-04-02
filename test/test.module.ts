@@ -7,13 +7,15 @@ import { daoProviders } from '../src/dao/dao.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { linkProvider } from '../src/link/link.module';
 import configuration from '../src/config/configuration';
+import { redisProviders } from '../src/redis/redis.module';
 import { redirectProvider } from '../src/redirect/redirect.module';
-import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
 import { observabilityProvider } from '../src/observability/observability.module';
+import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
 
 function appProviders(): Provider[] {
   return [
     ...daoProviders,
+    ...redisProviders,
     linkProvider,
     redirectProvider,
     observabilityProvider,

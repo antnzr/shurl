@@ -6,6 +6,7 @@ import logConf from './config/logger.config';
 import { LinkModule } from './link/link.module';
 import { AppController } from './app.controller';
 import configuration from './config/configuration';
+import { RedisModule } from './redis/redis.module';
 import { RedirectModule } from './redirect/redirect.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CodeGeneratorModule } from './code-generator/code-generator.module';
@@ -17,6 +18,7 @@ import { ObservabilityModule } from './observability/observability.module';
     LoggerModule.forRootAsync({ inject: [ConfigService], useFactory: logConf }),
     DaoModule,
     LinkModule,
+    RedisModule,
     RedirectModule,
     CodeGeneratorModule,
     ObservabilityModule,

@@ -10,3 +10,7 @@ export const InjectCodeGeneratorService = (): ParameterDecorator =>
   Inject(Service.CODE_GENERATOR);
 export const InjectObservabilityService = (): ParameterDecorator =>
   Inject(Service.OBSERVABILITY);
+export const InjectCacheService = (): ParameterDecorator =>
+  Inject(Service.CACHE);
+export const InjectRedisClient = (): ParameterDecorator =>
+  Inject(Service.REDIS_CLIENT);
