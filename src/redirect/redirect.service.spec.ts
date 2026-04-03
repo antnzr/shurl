@@ -2,15 +2,15 @@ import { Knex } from 'knex';
 import { faker } from '@faker-js/faker';
 import { TestInfra } from '../../test/infra';
 import { Service, Table } from '../constants';
-import { TestingModule } from '@nestjs/testing';
 import { IRedirectService } from './interfaces';
 import { ILinkService } from '../link/interfaces';
-import { APP_TestingModule } from '../../test/test.module';
+import { APP_TestingModule, TestApp } from '../../test/test.module';
 import { LinkExpiredError, LinkNotFoundError } from '../link/errors';
 
 describe('IRedirectService', () => {
   let service: IRedirectService;
   let linkService: ILinkService;
+  let app: TestApp;
   let db: Knex;
 
   const infra = TestInfra.getInstance();
@@ -20,13 +20,15 @@ describe('IRedirectService', () => {
     const { knex } = await infra.makeInfraServices();
     db = knex;
 
-    const module: TestingModule = await APP_TestingModule({ knex });
-    service = module.get<IRedirectService>(Service.REDIRECT);
-    linkService = module.get<ILinkService>(Service.LINK);
+    app = await APP_TestingModule({ knex });
+
+    service = app.get<IRedirectService>(Service.REDIRECT);
+    linkService = app.get<ILinkService>(Service.LINK);
   });
 
   afterAll(async () => {
-    await db?.destroy();
+    await db.destroy();
+    await app.close();
   });
 
   afterEach(async () => {

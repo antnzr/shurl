@@ -1,16 +1,35 @@
 import { Knex } from 'knex';
-import { Provider } from '@nestjs/common';
-import { Repository } from '../src/constants';
+import { RedisClientType } from 'redis';
 import validate from '../src/config/validate';
 import { ConfigModule } from '@nestjs/config';
 import { daoProviders } from '../src/dao/dao.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Repository, Service } from '../src/constants';
 import { linkProvider } from '../src/link/link.module';
 import configuration from '../src/config/configuration';
+import { InjectionToken, Provider } from '@nestjs/common';
 import { redisProviders } from '../src/redis/redis.module';
 import { redirectProvider } from '../src/redirect/redirect.module';
 import { observabilityProvider } from '../src/observability/observability.module';
 import { codeGeneratorProvider } from '../src/code-generator/code-generator.module';
+
+export class TestApp {
+  constructor(private readonly module: TestingModule) {}
+
+  get<T>(token: InjectionToken): T {
+    return this.module.get<T>(token);
+  }
+
+  async close() {
+    const redis = this.module.get<RedisClientType>(Service.REDIS_CLIENT, {
+      strict: false,
+    });
+
+    if (redis) await redis.quit();
+
+    await this.module.close();
+  }
+}
 
 function appProviders(): Provider[] {
   return [
@@ -37,8 +56,8 @@ export async function APP_TestingModule({
 }: {
   knex?: Knex;
   providers?: Provider[];
-} = {}): Promise<TestingModule> {
-  const module = Test.createTestingModule({
+} = {}): Promise<TestApp> {
+  const builder = Test.createTestingModule({
     imports: [
       ConfigModule.forRoot({
         validate,
@@ -51,8 +70,10 @@ export async function APP_TestingModule({
   });
 
   if (knex) {
-    module.overrideProvider(Repository.DATABASE).useValue(knex);
+    builder.overrideProvider(Repository.DATABASE).useValue(knex);
   }
 
-  return module.compile();
+  const module = await builder.compile();
+
+  return new TestApp(module);
 }

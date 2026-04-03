@@ -3,12 +3,12 @@ import { faker } from '@faker-js/faker';
 import { ILinkService } from './interfaces';
 import { TestInfra } from '../../test/infra';
 import { Service, Table } from '../constants';
-import { TestingModule } from '@nestjs/testing';
-import { APP_TestingModule } from '../../test/test.module';
+import { APP_TestingModule, TestApp } from '../../test/test.module';
 
 describe('ILinkService', () => {
   let service: ILinkService;
   let db: Knex;
+  let app: TestApp;
 
   const infra = TestInfra.getInstance();
 
@@ -17,12 +17,13 @@ describe('ILinkService', () => {
     const { knex } = await infra.makeInfraServices();
     db = knex;
 
-    const module: TestingModule = await APP_TestingModule({ knex });
-    service = module.get<ILinkService>(Service.LINK);
+    app = await APP_TestingModule({ knex });
+    service = app.get<ILinkService>(Service.LINK);
   });
 
   afterAll(async () => {
-    await db?.destroy();
+    await db.destroy();
+    await app.close();
   });
 
   afterEach(async () => {
