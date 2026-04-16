@@ -19,11 +19,11 @@ class EnvironmentVariables {
   @Min(3000)
   @Max(7000)
   @IsOptional()
-  APP_PORT: number = 3007;
+  PORT: number = 3007;
 
   @IsString()
   @IsOptional()
-  APP_ADDR: string = '0.0.0.0';
+  ADDR: string = '0.0.0.0';
 
   @IsString()
   @IsNotEmpty()
