@@ -147,7 +147,8 @@ Request body:
 
 ```json
 {
-  "url": "https://example.com"
+  "url": "https://example.com",
+  "expiresAt": "2026-04-22T10:00:00.000Z"
 }
 ```
 
@@ -156,7 +157,7 @@ Example:
 ```bash
 curl -X POST http://localhost:3007/api/v1/links \
   -H 'Content-Type: application/json' \
-  -d '{"url":"https://example.com"}'
+  -d '{"url":"https://example.com","expiresAt":"2026-04-22T10:00:00.000Z"}'
 ```
 
 Response shape:
@@ -178,6 +179,32 @@ Implementation notes:
 - Short codes are generated with secure random bytes
 - Default code length is `7`
 - Link creation retries up to `5` times on unique-code collisions
+- `expiresAt` is optional and must be a future ISO-8601 timestamp when provided
+
+### Update Link Expiration
+
+```http
+PATCH /api/v1/links
+Content-Type: application/json
+```
+
+Request body:
+
+```json
+{
+  "code": "abc1234",
+  "expiresAt": "2026-04-23T10:00:00.000Z"
+}
+```
+
+Clear expiration:
+
+```json
+{
+  "code": "abc1234",
+  "expiresAt": null
+}
+```
 
 ### Resolve Redirect
 
@@ -195,7 +222,7 @@ Expected behavior:
 
 - Returns `302 Found` when the code exists
 - Returns an error when the code does not exist
-- Returns an error when the link has expired
+- Returns `410 Gone` when the link has expired
 
 ## API Docs
 
