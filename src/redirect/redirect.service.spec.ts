@@ -91,5 +91,45 @@ describe('IRedirectService', () => {
 
       expect(result).toBe(url);
     });
+
+    it('should invalidate cached redirects after expiration update', async () => {
+      const url = faker.internet.url();
+      const created = await linkService.create({ url });
+
+      const first = await service.resolve(created.code);
+      expect(first).toBe(url);
+
+      await db(Table.LINKS)
+        .where({ id: created.id })
+        .update({ original_url: 'https://example.org/updated' });
+
+      const cached = await service.resolve(created.code);
+      expect(cached).toBe(url);
+
+      await linkService.updateExpiration({
+        code: created.code,
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      });
+
+      const refreshed = await service.resolve(created.code);
+      expect(refreshed).toBe('https://example.org/updated');
+    });
+
+    it('should stop resolving after expiration once cache ttl elapses', async () => {
+      const url = faker.internet.url();
+      const created = await linkService.create({
+        url,
+        expiresAt: new Date(Date.now() + 1_500).toISOString(),
+      });
+
+      const first = await service.resolve(created.code);
+      expect(first).toBe(url);
+
+      await new Promise((resolve) => setTimeout(resolve, 1_700));
+
+      await expect(service.resolve(created.code)).rejects.toThrow(
+        LinkExpiredError,
+      );
+    });
   });
 });

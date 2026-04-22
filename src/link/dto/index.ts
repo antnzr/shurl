@@ -1,12 +1,34 @@
-import { IsUrl } from 'class-validator';
 import { getField } from '../../utils/get-field';
 import { Expose, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsUrl, IsString, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateLinkRequest {
   @ApiProperty({ example: 'https://example.com' })
   @IsUrl()
   url!: string;
+
+  @ApiPropertyOptional({ example: '2026-04-22T10:00:00.000Z' })
+  @IsOptional()
+  @IsDateString()
+  expiresAt?: string;
+}
+
+export class UpdateLinkExpirationRequest {
+  @ApiProperty({ example: 'abc1234' })
+  @IsString()
+  code!: string;
+
+  @ApiPropertyOptional({
+    nullable: true,
+    example: '2026-04-22T10:00:00.000Z',
+  })
+  @Transform(({ value }: { value?: string | null }) =>
+    value === undefined ? undefined : value,
+  )
+  @IsOptional()
+  @IsDateString()
+  expiresAt!: string | null;
 }
 
 export class LinkResponse {

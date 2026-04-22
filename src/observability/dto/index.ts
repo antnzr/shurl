@@ -11,7 +11,11 @@ export const metricsRegistry = {
   operationCounter: meter.createCounter('app_operation_total'),
 };
 
-export type OperationName = 'link.create' | 'link.get' | 'link.delete';
+export type OperationName =
+  | 'link.create'
+  | 'link.get'
+  | 'link.update'
+  | 'link.delete';
 
 export interface OperationContext {
   operation: OperationName;

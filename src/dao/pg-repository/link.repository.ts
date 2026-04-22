@@ -3,7 +3,7 @@ import { LinkEntity } from '../entity';
 import { Table } from '../../constants';
 import { ILinkRepository } from '../interfaces';
 import { InjectDB } from '../../utils/injecters';
-import { CreateLinkDto, LinkResolveDto } from '../dto';
+import { CreateLinkDto, LinkResolveDto, UpdateLinkExpirationDto } from '../dto';
 
 export class LinkRepository implements ILinkRepository {
   constructor(
@@ -21,6 +21,20 @@ export class LinkRepository implements ILinkRepository {
       })
       .returning('*');
     return result;
+  }
+
+  async updateExpiration(
+    dto: UpdateLinkExpirationDto,
+  ): Promise<LinkEntity | null> {
+    const { code, expiresAt } = dto;
+    const [result] = await this.db<LinkEntity>(Table.LINKS)
+      .where({ code, deleted_at: null })
+      .update({
+        expires_at: expiresAt ? new Date(expiresAt) : null,
+      })
+      .returning('*');
+
+    return result || null;
   }
 
   async findByCode(code: string): Promise<LinkEntity | null> {

@@ -6,4 +6,9 @@ export class CreateLinkDto {
   expiresAt?: Date | string | null;
 }
 
+export class UpdateLinkExpirationDto {
+  code!: string;
+  expiresAt!: Date | string | null;
+}
+
 export type LinkResolveDto = Pick<LinkEntity, 'original_url' | 'expires_at'>;
